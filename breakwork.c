@@ -15,7 +15,7 @@
 int steps = 0;
 int state = 1;
 int N = 0;              // Desired steps
-int threshold = 1551;
+int threshold = 1700;
 
 // OC1 Interrupt Service Routine
 void __attribute__((interrupt, no_auto_psv)) _OC1Interrupt(void) {      // step counter 
@@ -327,41 +327,37 @@ void linefollow(void) {
             _LATB7 = 0;
             balldropoff();
         } 
-        _LATB7 = 1;
-        if (ADC1BUF9 < threshold && ADC1BUF10 < threshold) { // right and middle
-            OC1RS = 110; // right
-            OC1R = OC1RS * .5;
+        
+        _LATB7 = 0;
+        if (ADC1BUF11 < threshold && ADC1BUF10 < 1200) { // right and middle
+            OC1RS = 120; // right
+            OC1R = 60;
             OC2RS = 90; // left
-            OC2R = OC2RS * .5;
-        } if (ADC1BUF10 < threshold && ADC1BUF11 < threshold) { // left and middle
+            OC2R = 45;
+        } if (ADC1BUF10 < 1200 && ADC1BUF9 < threshold) { // left and middle
             OC1RS = 90; // right
-            OC1R = OC1RS * .5;
-            OC2RS = 110; // left
-            OC2R = OC2RS * .5;
+            OC1R = 45;
+            OC2RS = 120; // left
+            OC2R = 60;
         } 
-        if (ADC1BUF11 < threshold) { // just right
+        if (ADC1BUF11 < threshold) { // just left
+            _LATB7 = 1;
             OC1RS = 100; // right
-            OC1R = OC1RS * .5;
+            OC1R = 50;
             OC2RS = 0; // left
-            OC2R = OC2RS * .5;
-        } if (ADC1BUF9 < threshold) { // just left
+            OC2R = 0;
+        } if (ADC1BUF9 < threshold) { 
             OC1RS = 0; // right
-            OC1R = OC1RS * .5;
+            OC1R = 0;
             OC2RS = 100; // left
-            OC2R = OC2RS * .5;
+            OC2R = 50;
         } 
-//        if (ADC1BUF10 < threshold) { // just middle
-//            OC1RS = 100; // right
-//            OC1R = OC1RS * .5;
-//            OC2RS = 100; // left
-//            OC2R = OC2RS * .5;
-//        } 
-        else { // just middle
+        if (ADC1BUF10 < threshold) { // just middle
             OC1RS = 100; // right
-            OC1R = OC1RS * .5;
+            OC1R = 50;
             OC2RS = 100; // left
-            OC2R = OC2RS * .5;
-        } 
+            OC2R = 50;
+        }  
 
 //        else {
 //            canyon();
@@ -382,12 +378,12 @@ int main()
     OC2RS = 80; 
     OC2R = OC2RS * .5;
 
-    // Loop
+    // Loop 
     while(1) {
-        int k = 0;
-        while (k < 2500) { // waste time
-            k++;
-        }
+//        int k = 0;
+//        while (k < 250) { // waste time
+//            k++;
+//        }
         //undoc
         linefollow();
         //doc 
