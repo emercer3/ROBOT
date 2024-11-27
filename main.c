@@ -183,10 +183,129 @@ void ballcollect(void) {
     state = 1;
 }
 
+void balldropoff(void) {
+    if (ADC1BUF13 < 1551) { // read white
+        steps = 0;
+        N = 130;
+        _LATB9 = 1;
+        _LATA1 = 0;
+        while (steps <= N) {} // turn right
+        steps = 0;
+        OC3R = 7;
+        OC1RS = 0; // old 79 
+        OC1R = OC1RS * .5;
+        OC2RS = 0; 
+        OC2R = OC2RS * .5;
+        int k = 0;
+        while (k < 1900) {
+            k++;
+        }
+        OC1RS = 100; 
+        OC1R = OC1RS * .5;
+        OC2RS = 100; 
+        OC2R = OC2RS * .5;
+        steps = 0;
+        N = 130;
+        _LATB9 = 0;
+        _LATA1 = 1;
+        while (steps <= N) {} // turn left
+        OC3R = 35;
+        steps = 0;
+        N = 200;
+        _LATB9 = 1; // go straight
+        _LATA1 = 1;
+        while (steps <= N) {}
+    } else {    // read black
+        _LATB7 = 1;
+        steps = 0;
+        N = 130;
+        _LATB9 = 0;
+        _LATA1 = 1;
+        while (steps <= N) {} // turn left
+        steps = 0;
+        OC3R = 7;
+        OC1RS = 0; 
+        OC1R = OC1RS * .5;
+        OC2RS = 0; 
+        OC2R = OC2RS * .5;
+        int k = 0;
+        while (k < 1700) {
+            k++;
+        }
+        OC1RS = 100; 
+        OC1R = OC1RS * .5;
+        OC2RS = 100; 
+        OC2R = OC2RS * .5;
+        steps = 0;
+        N = 130;
+        _LATB9 = 1;
+        _LATA1 = 0;
+        while (steps <= N) {} // turn right
+        OC3R = 35;
+        N = 200;
+        steps = 0;
+        _LATB9 = 1; // go straight
+        _LATA1 = 1;
+        while (steps <= N) {}
+    }
+}
+
+void canyon(void) {
+    while(True) {
+        if (ADC1BUF15 < 1200) { // front
+           if (ADC1BUF4 < 1300) { // left
+               _LATB7 = 1;
+               steps = 0;
+               N = 127; // old 128
+               _LATB9 = 0; // this is right
+               _LATA1 = 1;
+               while (steps <= N) {} // turn left
+               steps = 0;
+               _LATB9 = 1;
+               _LATA1 = 1;
+               while (steps < 40) {}
+           }
+           else {
+               _LATB7 = 1;
+               steps = 0;
+               N = 125 ; // old 128 
+               _LATB9 = 1; // this is left 
+               _LATA1 = 0;
+               while (steps <= N) {} // turn right
+               steps = 0;
+               _LATB9 = 1;
+               _LATA1 = 1;
+               while (steps < 40) {}
+           }
+        }
+           if (ADC1BUF10 < 1551) {
+               if (ADC1BUF15 < 1200) { // something on left
+                   _LATB7 = 1;
+                   steps = 0;
+                   N = 125; // old 128
+                   _LATB9 = 0; // this is right
+                   _LATA1 = 1;
+                   while (steps <= N) {} // turn left
+                   return;
+               } else {
+                   _LATB7 = 1;
+                   steps = 0;
+                   N = 127; // old 128 
+                   _LATB9 = 1; // this is left
+                   _LATA1 = 0;
+                   while (steps <= N) {} // turn right
+                   return;
+               }
+       } 
+    }
+}
+
 void linefollow(void) {    
     while (1) {
-        if (ADC1BUF12 > 200) {
+        if (ADC1BUF12 > 200) { // read IR sensor
           ballcollect();
+        } else if (ADC1BUF4 < 1200 && ADC1BUF10 < 1551) { // read wall on left and on line
+          balldropoff();
         }
         
         if (ADC1BUF11 < threshold && ADC1BUF10 < threshold) { // right and middle
@@ -215,6 +334,10 @@ void linefollow(void) {
             OC2RS = 80; // left
             OC2R = OC2RS * .5;
         } 
+
+        else {
+            canyon();
+        }
     }
 }
 
@@ -235,179 +358,7 @@ int main()
     while(1) {
         //undoc
         linefollow();
-        //doc
-//        if (_RB2 == 1) {
-//            state = 1;
-//            _OC1IE = 1;
-//        }
-//        OC3R = 30;
-//        int k = 0;
-//            while (k < 50) {
-//                k++;
-//            }
-//        OC3R = 8;
-//        if (ADC1BUF13 < 1200) {
-//            _LATB7 = 1;
-//            OC3R = 7;
-//            int k = 0;
-//            while (k < 1900) {
-//                k++;
-//            }
-//        } else {
-//            _LATB7 = 0;
-//            OC3R = 35;
-//        }
-//        // AD RANGE SENSOR AND LIGHT LED
-        OC1RS = 100; // old 79 
-        OC1R = OC1RS * .5;
-        OC2RS = 100; 
-        OC2R = OC2RS * .5;
-        
-//        if (ADC1BUF15 < 1200) { // front
-//            if (ADC1BUF4 < 1300) { // left
-//                _LATB7 = 1;
-//                steps = 0;
-//                N = 127; // old 128
-//                _LATB9 = 0; // this is right
-//                _LATA1 = 1;
-//                while (steps <= N) {} // turn left
-//                steps = 0;
-//                _LATB9 = 1;
-//                _LATA1 = 1;
-//                while (steps < 40) {}
-//            }
-//            else {
-//                _LATB7 = 1;
-//                steps = 0;
-//                N = 125 ; // old 128 
-//                _LATB9 = 1; // this is left 
-//                _LATA1 = 0;
-//                while (steps <= N) {} // turn right
-//                steps = 0;
-//                _LATB9 = 1;
-//                _LATA1 = 1;
-//                while (steps < 40) {}
-//            }
-//            
-//            if (ADC1BUF10 < 1551) {
-//                if (ADC1BUF15 < 1200) { // something on left
-//                    _LATB7 = 1;
-//                    steps = 0;
-//                    N = 125; // old 128
-//                    _LATB9 = 0; // this is right
-//                    _LATA1 = 1;
-//                    while (steps <= N) {} // turn left
-//                } else {
-//                    _LATB7 = 1;
-//                    steps = 0;
-//                    N = 127; // old 128 
-//                    _LATB9 = 1; // this is left
-//                    _LATA1 = 0;
-//                    while (steps <= N) {} // turn right
-//                }
-//            }
-//        } 
-        
-        // BALL DROP OFF
-        if (ADC1BUF4 < 1200 && ADC1BUF10 < 1551) {  // ball spot on left and reading line
-            if (ADC1BUF13 < 1551) { // read white
-                steps = 0;
-                N = 130;
-                _LATB9 = 1;
-                _LATA1 = 0;
-                while (steps <= N) {} // turn right
-                steps = 0;
-                OC3R = 7;
-                OC1RS = 0; // old 79 
-                OC1R = OC1RS * .5;
-                OC2RS = 0; 
-                OC2R = OC2RS * .5;
-                int k = 0;
-                while (k < 1900) {
-                    k++;
-                }
-                OC1RS = 100; 
-                OC1R = OC1RS * .5;
-                OC2RS = 100; 
-                OC2R = OC2RS * .5;
-                steps = 0;
-                N = 130;
-                _LATB9 = 0;
-                _LATA1 = 1;
-                while (steps <= N) {} // turn left
-                OC3R = 35;
-                steps = 0;
-                N = 200;
-                _LATB9 = 1; // go straight
-                _LATA1 = 1;
-                while (steps <= N) {}
-            } else {    // read black
-                _LATB7 = 1;
-                steps = 0;
-                N = 130;
-                _LATB9 = 0;
-                _LATA1 = 1;
-                while (steps <= N) {} // turn left
-                steps = 0;
-                OC3R = 7;
-                OC1RS = 0; 
-                OC1R = OC1RS * .5;
-                OC2RS = 0; 
-                OC2R = OC2RS * .5;
-                int k = 0;
-                while (k < 1700) {
-                    k++;
-                }
-                OC1RS = 100; 
-                OC1R = OC1RS * .5;
-                OC2RS = 100; 
-                OC2R = OC2RS * .5;
-                steps = 0;
-                N = 130;
-                _LATB9 = 1;
-                _LATA1 = 0;
-                while (steps <= N) {} // turn right
-                OC3R = 35;
-                N = 200;
-                steps = 0;
-                _LATB9 = 1; // go straight
-                _LATA1 = 1;
-                while (steps <= N) {}
-            }
-                
-        }
-        
-//         FIND IR SENSOR AND STOP
-        if (ADC1BUF12 > 200) {
-            steps = 0;
-            N = 127; // old 128
-            _LATB9 = 0; 
-            _LATA1 = 1;
-            while (steps <= N) {} // right
-            steps = 0;
-            _LATB9 = 1;
-            _LATA1 = 1;
-            while (steps < 230) {}
-            steps = 0;
-            _LATB9 = 0;
-            _LATA1 = 0;
-            while (steps < 230) {}
-            _LATB7 = 1;
-            steps = 0;
-            N = 127; // old 128
-            _LATB9 = 1; 
-            _LATA1 = 0;
-            while (steps <= N) {} // turn left
-            steps = 0;
-            _LATB7 = 0;
-            _LATB9 = 1;
-            _LATA1 = 1;
-            while(steps <= 200){}
-            state = 1;
-        } 
-        
-          
+        //doc        
     }
-
     return 0;
 }
