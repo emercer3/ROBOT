@@ -5,22 +5,20 @@
  * Created on November 27, 2024, 8:46 AM
  */
 
-
+#define FCY 16500UL
 #include "xc.h"
 #include <libpic30.h>
 
 // Select oscillator
 //#pragma config FNOSC = LPRC
 #pragma config FNOSC = FRCDIV
-RCDIV = 0b001
 #pragma config SOSCSRC = DIG
 #pragma config OSCIOFNC = OFF
 // Global variables
-#define FCY 16500UL
 int steps = 0;
 int state = 0;
 int N = 0;              // Desired steps
-int threshold = 1700;
+int threshold = 1300;
 
 // OC1 Interrupt Service Routine
 void __attribute__((interrupt, no_auto_psv)) _OC1Interrupt(void) {      // step counter 
@@ -95,14 +93,14 @@ void config_pwm(void) {
     OC2R = OC2RS * .5;
     
     // Configure PWM
-    OC3CON1 = 0;                // Clear all bits of OC1CON1
-    OC3CON2 = 0;                // Clear all bits of OC1CON2
-    OC3CON1bits.OCTSEL = 0b111; // System clock as timing source
-    OC3CON2bits.SYNCSEL = 0x1F; // Self-synchronization
-    OC3CON2bits.OCTRIG = 0;     // Synchronization mode
-    OC3CON1bits.OCM = 0b110;    // Edge-aligned PWM mode
-    OC3RS = 0; // PWM period and duty cycle for pin 14
-    OC3R = OC3RS * .5;
+   OC3CON1 = 0;                // Clear all bits of OC1CON1
+   OC3CON2 = 0;                // Clear all bits of OC1CON2
+   OC3CON1bits.OCTSEL = 0b111; // System clock as timing source
+   OC3CON2bits.SYNCSEL = 0x1F; // Self-synchronization
+   OC3CON2bits.OCTRIG = 0;     // Synchronization mode
+   OC3CON1bits.OCM = 0b110;    // Edge-aligned PWM mode
+   OC3RS = 249; // PWM period and duty cycle for pin 14
+   OC3R = OC3RS * .5;
 
 }
 
@@ -110,8 +108,8 @@ void config_pins(void) {
     // PWM FOR BALL DROP
     _TRISB1 = 0; // direction on pin 13
     _LATB1 = 1;
-    OC3RS = 309; // PWM period and duty cycle for pin 14
-    OC3R = 35; 
+//    OC3RS = 309; // PWM period and duty cycle for pin 14
+//    OC3R = 35; 
     // PWM right motor
     _TRISB9 = 0; // direction on pin 13
     _LATB9 = 1;      
@@ -174,13 +172,13 @@ void ballcollect(void) {
     OC2RS = 0; 
     OC2R = OC2RS * .5;
     int k = 0;
-    while (k < 1900) {
+    while (k < 5000) {
         k++;
     }
-    OC1RS = 80; 
-    OC1R = OC1RS * .5;
-    OC2RS = 80; 
-    OC2R = OC2RS * .5;
+    OC1RS = 2000; 
+    OC1R = 1000;
+    OC2RS = 2000; 
+    OC2R = 1000;
     _LATB9 = 0;
     _LATA1 = 0;
     while (steps < 230) {}
@@ -203,25 +201,26 @@ void balldropoff(void) {
         _LATA1 = 0;
         while (steps <= N) {} // turn right
         steps = 0;
-        OC3R = 7;
-        OC1RS = 0; // old 79 
+        OC3R = 249;
+        OC1RS = 0; 
         OC1R = OC1RS * .5;
         OC2RS = 0; 
         OC2R = OC2RS * .5;
-        int k = 0;
-        while (k < 1900) {
-            k++;
-        }
-        OC1RS = 100; 
-        OC1R = OC1RS * .5;
-        OC2RS = 100; 
-        OC2R = OC2RS * .5;
+        __Delay_ms(1000);
+        // int k = 0;
+        // while (k < 1900) {
+        //     k++;
+        // }
+        OC1RS = 2000; 
+        OC1R = 1000;
+        OC2RS = 2000; 
+        OC2R = 1000;
         steps = 0;
         N = 130;
         _LATB9 = 0;
         _LATA1 = 1;
         while (steps <= N) {} // turn left
-        OC3R = 35;
+        OC3R = 1249;
         steps = 0;
         N = 200;
         _LATB9 = 1; // go straight
@@ -235,25 +234,26 @@ void balldropoff(void) {
         _LATA1 = 1;
         while (steps <= N) {} // turn left
         steps = 0;
-        OC3R = 7;
+        OC3R = 249;
         OC1RS = 0; 
         OC1R = OC1RS * .5;
         OC2RS = 0; 
         OC2R = OC2RS * .5;
-        int k = 0;
-        while (k < 1700) {
-            k++;
-        }
-        OC1RS = 100; 
-        OC1R = OC1RS * .5;
-        OC2RS = 100; 
-        OC2R = OC2RS * .5;
+        __Delay_ms(1000);
+        // int k = 0;
+        // while (k < 5000) {
+        //     k++;
+        // }
+        OC1RS = 2000; 
+        OC1R = 1000;
+        OC2RS = 2000; 
+        OC2R = 1000;
         steps = 0;
         N = 130;
         _LATB9 = 1;
         _LATA1 = 0;
         while (steps <= N) {} // turn right
-        OC3R = 35;
+        OC3R = 1249;
         N = 200;
         steps = 0;
         _LATB9 = 1; // go straight
@@ -344,112 +344,127 @@ void enterdoc(void) {
 }
 
 void laser(void) {
-    int angle = 0;
-    while (angel <= 180) {
-        OC3R = (angle*309)/180;
+    // int angle = 0;
+    while (OC3R <= 1249) {
+        OC3R = 249
         if (ADC1BUF0 > 500) {
             _LATB8 = 1;
             break;
         }
-        angle++;
+        OC3R = OC3R + 2;
     }
 }
 
 void linefollow(void) {    
     while (1) {
-        if (ADC1BUF12 > 400 && state > 1) { // read IR sensor
-            steps = 0;
-            while (steps < 65) {} //__delay_ms(100) larger?
-            ballcollect();
-        } else if (ADC1BUF4 < 1200 && ADC1BUF10 < 1551) { // read wall on left and on line
-            balldropoff();
-        } else if (ADC1BUF14 < threshold) { // far left
-            if (state == 1) {
-                leavadoc();
-                state = 2;
-            } else if (state == 3) {
-                enterdoc();
-                state = 4;
-            }
-        } 
-        
-        _LATB7 = 0;
-        if (ADC1BUF11 < threshold && ADC1BUF10 < 1200) { // right and middle
-            OC1RS = 120; // right
-            OC1R = 60;
-            OC2RS = 90; // left
-            OC2R = 45;
-        } else if (ADC1BUF10 < 1200 && ADC1BUF9 < threshold) { // left and middle
-            OC1RS = 90; // right
-            OC1R = 45;
-            OC2RS = 120; // left
-            OC2R = 60;
+       if (ADC1BUF12 > 400) { // read IR sensor  && state > 1
+           steps = 0;
+           //while (steps < 50) {} 
+           __delay_ms(1000)
+           ballcollect();
+       } else if (ADC1BUF4 < 1200 && ADC1BUF10 < 1551) { // read wall on left and on line
+           balldropoff();
+       } 
+    //    else if (ADC1BUF14 < threshold) { // far left
+    //        if (state == 1) {
+    //            leavedoc();
+    //            state = 2;
+    //        } else if (state == 3) {
+    //            enterdoc();
+    //            state = 4;
+    //        }
+    //    } 
+
+        if (ADC1BUF11 < threshold && ADC1BUF10 < threshold) { // right and middle
+            OC1RS = 2250; // right
+            OC1R = 1125;
+            OC2RS = 1750; // left
+            OC2R = 500;
+        } else if (ADC1BUF10 < threshold && ADC1BUF9 < threshold) { // left and middle
+            OC1RS = 1750;   // right
+            OC1R = 875;
+            OC2RS = 2250;   // left
+            OC2R = 1125;
         } else if (ADC1BUF11 < threshold) { // just left
-            OC1RS = 100; // right
-            OC1R = 50;
-            OC2RS = 0; // left
-            OC2R = 0;
-        } else if (ADC1BUF9 < threshold) { 
-            OC1RS = 0; // right
-            OC1R = 0;
-            OC2RS = 100; // left
-            OC2R = 50;
+            OC1RS = 1100;   // right
+            OC1R = 550;
+            OC2RS = 3000;   // left
+            OC2R = 1500;
+        } else if (ADC1BUF9 < threshold) {  // just right
+            OC1RS = 3000; // right
+            OC1R = 1500;
+            OC2RS = 1100; // left
+            OC2R = 550;
         } else if (ADC1BUF10 < threshold) { // just middle
-            _LATB7 = 1;
-            OC1RS = 100; // right
-            OC1R = 50;
-            OC2RS = 100; // left
-            OC2R = 50;
+            OC1RS = 2000; // right
+            OC1R = 1000;
+            OC2RS = 2000; // left
+            OC2R = 1000;
         }  
 
-        else if (state == 2) {
-            OC1RS = 100; // right
-            OC1R = 50;
-            OC2RS = 100; // left
-            OC2R = 50;
-            canyon();
-            state = 3;
-        } else if (state == 4) {
-            steps = 0;
-            N = 125 ; // double value 
-            _LATB9 = 1;  
-            _LATA1 = 0;
-            while (steps <= N) {} // turn around
-            OC1RS = 0; // right
-            OC1R = 0;
-            OC2RS = 0; // left
-            OC2R = 0;
-            laser();
-            return;
-        }
+//        else if (state == 2) {
+//            OC1RS = 2500; // right
+//            OC1R = 1250;
+//            OC2RS = 2500; // left
+//            OC2R = 1250;
+//            canyon();
+//            state = 3;
+//        } 
+//        else if (state == 4) {
+//            steps = 0;
+//            N = 125 ; // double value 
+//            _LATB9 = 1;  
+//            _LATA1 = 0;
+//            while (steps <= N) {} // turn around
+//            OC1RS = 0; // right
+//            OC1R = 0;
+//            OC2RS = 0; // left
+//            OC2R = 0;
+//            laser();
+//            return;
+//        }
     }
 }
 
 int main()
 {
     // Configure crap
+    _RCDIV = 0b011;
     config_ad();
     config_pwm();
     config_pins();
         
-    OC1RS = 0; 
-    OC1R = 0;
-    OC2RS = 0; 
-    OC2R = 0;
+    state = 0;
  
     while(1) {
-        if (ADC1BUF12 > 400) {
+        __delay_ms(20000)
+
+        if (ADC1BUF12 > 1000) {
             state = 1;
         }
 
-        if (state == 1) {
-            OC1RS = 100; // right change to 1250
-            OC1R = 50;
-            OC2RS = 100; // left
-            OC2R = 50;
-            linefollow();
-            state = 0;
-        }
+        // TEST LEFT MOTOR
+        OC2RS = 2000; // left
+        OC2R = 1000;
+        __delay_ms(1000);
+        OC2RS = 1100; // left
+        OC2R = 550;
+        __delay_ms(1000);
+
+        // NORMAL STATE CRAP
+        // if (state == 1) {
+        //     OC1RS = 2000; 
+        //     OC1R = 1000;
+        //     OC2RS = 2000; 
+        //     OC2R = 1000;
+        //     linefollow();
+        //     state = 0;
+        // } else {
+        //     OC1RS = 0; 
+        //     OC1R = 0;
+        //     OC2RS = 0; 
+        //     OC2R = 0;
+        // }
 
     } return 0;
 }
