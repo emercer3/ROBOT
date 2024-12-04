@@ -157,14 +157,14 @@ void config_pins(void) {
 
 void ballcollect(void) {
     steps = 0;
-    N = 127; // old 128
+    N = 250; // old 128
     _LATB9 = 0; 
     _LATA1 = 0;
     while (steps <= N) {} // right
     steps = 0;
     _LATB9 = 1;
     _LATA1 = 0;
-    while (steps < 230) {}
+    while (steps < 460) {}
     steps = 0;
     OC1RS = 0; 
     OC1R = OC1RS * .5;
@@ -177,22 +177,22 @@ void ballcollect(void) {
     OC2R = 625;
     _LATB9 = 0;
     _LATA1 = 1;
-    while (steps < 230) {}
+    while (steps < 460) {}
     steps = 0;
-    N = 127; // old 128
+    N = 250; // old 128
     _LATB9 = 1; 
     _LATA1 = 1;
     while (steps <= N) {} // turn left
     steps = 0;
     _LATB9 = 1;
     _LATA1 = 0;
-    while(steps <= 200){}
+    while(steps <= 400){}
 }
 
 void balldropoff(void) {
     if (ADC1BUF13 < 1551) { // read white
         steps = 0;
-        N = 130;
+        N = 250;
         _LATB9 = 1;
         _LATA1 = 1;
         while (steps <= N) {} // turn right
@@ -202,26 +202,26 @@ void balldropoff(void) {
         OC1R = OC1RS * .5;
         OC2RS = 0; 
         OC2R = OC2RS * .5;
-        __delay_ms(2000);
+        __delay_ms(5000);
         OC1RS = 1250; 
         OC1R = 625;
         OC2RS = 1250; 
         OC2R = 625;
         steps = 0;
-        N = 130;
+        N = 250;
         _LATB9 = 0;
         _LATA1 = 0;
         while (steps <= N) {} // turn left
         OC3R = 1249;
         steps = 0;
-        N = 200;
+        N = 400;
         _LATB9 = 1; // go straight
         _LATA1 = 0;
         while (steps <= N) {}
         return;
     } else {    // read black
         steps = 0;
-        N = 130;
+        N = 250;
         _LATB9 = 0;
         _LATA1 = 0;
         while (steps <= N) {} // turn left
@@ -231,18 +231,18 @@ void balldropoff(void) {
         OC1R = OC1RS * .5;
         OC2RS = 0; 
         OC2R = OC2RS * .5;
-        __delay_ms(2000);
+        __delay_ms(5000);
         OC1RS = 1250; 
         OC1R = 625;
         OC2RS = 1250; 
         OC2R = 625;
         steps = 0;
-        N = 130;
+        N = 250;
         _LATB9 = 1;
         _LATA1 = 1;
         while (steps <= N) {} // turn right
         OC3R = 1249;
-        N = 200;
+        N = 400;
         steps = 0;
         _LATB9 = 1; // go straight
         _LATA1 = 0;
@@ -256,51 +256,51 @@ void canyon(void) {
         if (ADC1BUF15 < 1200) { // front
            if (ADC1BUF4 < 1300) { // left
                steps = 0;
-               N = 127; // old 128
+               N = 250; // old 128
                _LATB9 = 0; // this is right
                _LATA1 = 0;
                while (steps <= N) {} // turn left
                steps = 0;
                _LATB9 = 1;
                _LATA1 = 0;
-               while (steps < 75) {}
+               while (steps < 150) {}
            }
            else {
                steps = 0;
-               N = 125 ; // old 128 
+               N = 250; // old 128 
                _LATB9 = 1; // this is left 
                _LATA1 = 1;
                while (steps <= N) {} // turn right
                steps = 0;
                _LATB9 = 1;
                _LATA1 = 0;
-               while (steps < 75) {}
+               while (steps < 150) {}
            }
         }
            if ((ADC1BUF10 < threshold) || (ADC1BUF9 < threshold) || (ADC1BUF11 < threshold)) {
                steps = 0;
-               while (steps < 30) {} // turn right
+               while (steps < 60) {} // turn right
                if (ADC1BUF15 < 1200) { // something on left
                     steps = 0;
-                    N = 125;
+                    N = 250;
                     _LATB9 = 0;
                     _LATA1 = 0;
                     while (steps <= N) {} // turn right
                     steps = 0;
                     _LATB9 = 1;
                     _LATA1 = 0;
-                    while (steps < 100) {}
+                    while (steps < 200) {}
                    return;
                } else {
                     steps = 0;
-                    N = 127; 
+                    N = 250; 
                     _LATB9 = 1;
                     _LATA1 = 1;
                     while (steps <= N) {} // turn left
                     steps = 0;
                     _LATB9 = 1;
                     _LATA1 = 0;
-                    while (steps < 100) {}
+                    while (steps < 200) {}
                     return;
                }
        } 
@@ -309,32 +309,32 @@ void canyon(void) {
 
 void leavedoc(void) {
     steps = 0;
-    N = 127;
+    N = 250;
     _LATB9 = 0;
     _LATA1 = 0;
     while (steps <= N) {} // turn left
     steps = 0;
     _LATB9 = 1;
     _LATA1 = 0;
-    while (steps < 75) {}
+    while (steps < 150) {}
 }
 
 void enterdoc(void) {
     steps = 0;
-    N = 125 ;
+    N = 250;
     _LATB9 = 0;
     _LATA1 = 0;
     while (steps <= N) {} // turn left
     steps = 0;
     _LATB9 = 1;
     _LATA1 = 0;
-    while (steps < 75) {}
+    while (steps < 150) {}
 }
 
 void laser(void) {
     // int angle = 0;
+    OC3R = 249;
     while (OC3R <= 1249) {
-        OC3R = 249;
         if (ADC1BUF0 > 500) {
             _LATB8 = 1;
             break;
@@ -394,7 +394,7 @@ void linefollow(void) {
             canyon();
         } else if (state == 3) {
            steps = 0;
-           N = 125 ; // double value 
+           N = 500; // double value 
            _LATB9 = 1;  
            _LATA1 = 1;
            while (steps <= N) {} // turn around
