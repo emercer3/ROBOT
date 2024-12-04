@@ -170,14 +170,11 @@ void ballcollect(void) {
     OC1R = OC1RS * .5;
     OC2RS = 0; 
     OC2R = OC2RS * .5;
-    int k = 0;
-    while (k < 5000) {
-        k++;
-    }
-    OC1RS = 2000; 
-    OC1R = 1000;
-    OC2RS = 2000; 
-    OC2R = 1000;
+    __delay_ms(4000);
+    OC1RS = 1250; 
+    OC1R = 625;
+    OC2RS = 1250; 
+    OC2R = 625;
     _LATB9 = 0;
     _LATA1 = 1;
     while (steps < 230) {}
@@ -205,15 +202,11 @@ void balldropoff(void) {
         OC1R = OC1RS * .5;
         OC2RS = 0; 
         OC2R = OC2RS * .5;
-        __delay_ms(1000);
-        // int k = 0;
-        // while (k < 1900) {
-        //     k++;
-        // }
-        OC1RS = 2000; 
-        OC1R = 1000;
-        OC2RS = 2000; 
-        OC2R = 1000;
+        __delay_ms(2000);
+        OC1RS = 1250; 
+        OC1R = 625;
+        OC2RS = 1250; 
+        OC2R = 625;
         steps = 0;
         N = 130;
         _LATB9 = 0;
@@ -238,15 +231,11 @@ void balldropoff(void) {
         OC1R = OC1RS * .5;
         OC2RS = 0; 
         OC2R = OC2RS * .5;
-        __delay_ms(1000);
-        // int k = 0;
-        // while (k < 5000) {
-        //     k++;
-        // }
-        OC1RS = 2000; 
-        OC1R = 1000;
-        OC2RS = 2000; 
-        OC2R = 1000;
+        __delay_ms(2000);
+        OC1RS = 1250; 
+        OC1R = 625;
+        OC2RS = 1250; 
+        OC2R = 625;
         steps = 0;
         N = 130;
         _LATB9 = 1;
@@ -364,15 +353,15 @@ void linefollow(void) {
        } else if (ADC1BUF4 < 1200 && ADC1BUF10 < 1551) { // read wall on left and on line
            balldropoff();
        } 
-    //    else if (ADC1BUF14 < threshold) { // far left
-    //        if (state == 1) {
-    //            leavedoc();
-    //            state = 2;
-    //        } else if (state == 3) {
-    //            enterdoc();
-    //            state = 4;
-    //        }
-    //    } 
+       else if (ADC1BUF14 < threshold) { // far left
+           if (state == 1) {
+               leavedoc();
+               state = 2;
+           } else if (state == 2) {
+               enterdoc();
+               state = 3;
+           }
+       } 
 
         if (ADC1BUF11 < threshold && ADC1BUF10 < threshold) { // right and middle
             OC1RS = 1500; // right
@@ -401,27 +390,21 @@ void linefollow(void) {
             OC2R = 625;
         }  
 
-        else if (state == 2) {
-            OC1RS = 2500; // right
-            OC1R = 1250;
-            OC2RS = 2500; // left
-            OC2R = 1250;
+        else if (ADC1BUF15 < 1200 && state != 3) { // something in front
             canyon();
-            state = 3;
-        } 
-//        else if (state == 4) {
-//            steps = 0;
-//            N = 125 ; // double value 
-//            _LATB9 = 1;  
-//            _LATA1 = 1;
-//            while (steps <= N) {} // turn around
-//            OC1RS = 0; // right
-//            OC1R = 0;
-//            OC2RS = 0; // left
-//            OC2R = 0;
-//            laser();
-//            return;
-//        }
+        } else if (state == 3) {
+           steps = 0;
+           N = 125 ; // double value 
+           _LATB9 = 1;  
+           _LATA1 = 1;
+           while (steps <= N) {} // turn around
+           OC1RS = 0; // right
+           OC1R = 0;
+           OC2RS = 0; // left
+           OC2R = 0;
+           laser();
+           return;
+       }
     }
 }
 
