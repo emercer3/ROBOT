@@ -413,7 +413,7 @@ void linefollow(void) {
             _LATB7 = 0;
             state = state + 1;
        } 
-       else if ((ADC1BUF4 < 700) && (ADC1BUF10 < threshold) && (state >= 2)) { // read wall on left and on line
+       else if ((ADC1BUF4 < 700) && (ADC1BUF10 < threshold) && (state >= 2)) { // read wall on left and on line try (300 < ADC1BUF4 && ADC1BUF4 < 7000)
             _LATB7 = 0;
             balldropoff();
             state = state + 1;
@@ -451,7 +451,7 @@ void linefollow(void) {
             OC2R = 675;
         }  
 
-        else if (ADC1BUF15 < 1200) { // something in front
+        else if (ADC1BUF15 < 1200) { // something in front  try (500 < ADC1BUF15 && ADC1BUF15 < 1200)
             _LATB7 = 0;
             OC1RS = 1000; 
             OC1R = 500;
